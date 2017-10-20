@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         /* INICIANDO SERVER SOCKET*/
         if(server == null) {
             server = new ServerSocket(this);
+            Log.e("Socket","Create Socket");
         }
         // Se inicializa en pantalla de lista de videos
         String json = "{\n" +

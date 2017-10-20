@@ -8,7 +8,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import app.dev.com.mediacast.includes.ConexionTCP;
-import app.dev.com.mediacast.includes.ServerSocket;
+import app.dev.com.mediacast.includes.Functions;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -16,7 +16,7 @@ import butterknife.OnClick;
 public class ClientSocket extends AppCompatActivity {
 
 
-    int port = 8080;
+    int port = 0;
 
     @BindView(R.id.txt_ip2)
     TextView txtIp;
@@ -28,8 +28,6 @@ public class ClientSocket extends AppCompatActivity {
 
     @BindView(R.id.btnClient)
     TextView btnClient;
-    @BindView(R.id.txt2)
-    TextView txt;
     @BindView(R.id.v1)
     Button v1;
     @BindView(R.id.i1)
@@ -42,18 +40,21 @@ public class ClientSocket extends AppCompatActivity {
     Button i2;
     @BindView(R.id.g2)
     Button g2;
+    @BindView(R.id.etPort)
+    EditText etPort;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_socket);
         ButterKnife.bind(this);
-        txtIp.setText(ServerSocket.getIpAddress());
+        txtIp.setText(Functions.getIpAddress());
         String json = "{\n" +
                 "  \"type\": \"image\",\n" +
                 "  \"value\": \"http://url.com\"\n" +
                 "}";
         cajaMsg.setText(json);
+        port = Integer.parseInt(etPort.getText().toString());
     }
 
     /**
@@ -62,7 +63,7 @@ public class ClientSocket extends AppCompatActivity {
      * @param view
      */
 
-    @OnClick({R.id.v1, R.id.i1, R.id.g1, R.id.v2, R.id.i2, R.id.g2,R.id.btnClient})
+    @OnClick({R.id.v1, R.id.i1, R.id.g1, R.id.v2, R.id.i2, R.id.g2, R.id.btnClient})
     public void onViewClicked(View view) {
 
         String json = "";
@@ -73,7 +74,7 @@ public class ClientSocket extends AppCompatActivity {
                 //finish();
                 break;
             case R.id.v1:
-                 json = "{\n" +
+                json = "{\n" +
                         "  \"type\": \"video\",\n" +
                         "  \"value\": \"1.mp4\"\n" +
                         "}";

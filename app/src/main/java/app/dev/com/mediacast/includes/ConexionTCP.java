@@ -1,13 +1,20 @@
 package app.dev.com.mediacast.includes;
 
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -46,24 +53,37 @@ public class ConexionTCP extends AsyncTask<Void, Void, Void>
         {
             socket = new Socket(dstAddress, dstPort);
 
+            //Send message
             DataOutputStream out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-            DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-
-            out.writeUTF(message);
+            BufferedInputStream buffer = new BufferedInputStream(socket.getInputStream());
+            out.write(message.getBytes());
             out.flush();
+            out.close();
 
-            final byte[] inputaData = new byte[1024];
-            in.read(inputaData);
+            //Request Message
 
-            final Runnable Rhn = new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    String inputString = new String(inputaData).trim();
-                    Log.d("INFO-TAG", inputString);
+            Log.e("Socket ", "-------BufferedReader--------");
+            try {
+                BufferedReader r = new BufferedReader(
+                        new InputStreamReader(buffer));
+                response = "";
+                int value = 0;
+                response = r.readLine();
+                while((value = r.read()) != -1) {
+                    // converts int to character
+                    char c = (char)value;
+                    // prints character
+                    response += c;
                 }
-            };
+                r.close();
+                Log.e("Socket", " Mensaje recibido" + response);
+
+            }catch(Exception ex){
+                Log.e("Socket", "ErrorBufferedReader: " + ex.toString() + " => " + response.toString());
+            }
+
+
+
 
 
         } catch (UnknownHostException e)
@@ -83,9 +103,11 @@ public class ConexionTCP extends AsyncTask<Void, Void, Void>
                 try
                 {
                     socket.close();
+                    Log.i("Socket","Socket close");
                 } catch (IOException e)
                 {
                     // TODO Auto-generated catch block
+                    Log.i("Socket","Socket not close");
                     e.printStackTrace();
                 }
             }
@@ -97,8 +119,11 @@ public class ConexionTCP extends AsyncTask<Void, Void, Void>
     protected void onPostExecute(Void result)
     {
         //textResponse.setText(response);
+        Log.i("Socket","onPostExecute:" + response + " r:" + result);
         super.onPostExecute(result);
+
     }
+
 
     public void setListener(OnReadListener listener)
     {
